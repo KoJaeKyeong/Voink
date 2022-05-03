@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 final class TabBarController: UITabBarController {
     
@@ -28,17 +29,18 @@ final class TabBarController: UITabBarController {
     private func configureAttribute() {
         view.backgroundColor = .systemBackground
         
-        mapViewController.tabBarItem = UITabBarItem(title: "map", image: UIImage(systemName:"map"), tag: 0)
-        emptyViewController.tabBarItem = UITabBarItem(title: nil, image: nil, tag: 1)
+        mapViewController.tabBarItem = UITabBarItem(title: "map", image: UIImage(systemName: "map"), tag: 0)
+        emptyViewController.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "record.circle"), tag: 1)
         recordListViewController.tabBarItem = UITabBarItem(title: "list", image: UIImage(systemName:"list.bullet"), tag: 2)
+        
+        if tabBarItem.tag == 1 {
+            UITabBar.appearance().tintColor = .systemRed
+        }
+        
         viewControllers = [mapViewController, emptyViewController, recordListViewController]
     }
     
     private func configureLayout() {
         
     }
-}
-
-extension TabBarController: UITabBarControllerDelegate {
-    
 }
