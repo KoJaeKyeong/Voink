@@ -30,17 +30,22 @@ final class TabBarController: UITabBarController {
         view.backgroundColor = .systemBackground
         
         mapViewController.tabBarItem = UITabBarItem(title: "map", image: UIImage(systemName: "map"), tag: 0)
-        emptyViewController.tabBarItem = UITabBarItem(title: nil, image: UIImage(systemName: "record.circle"), tag: 1)
+        emptyViewController.tabBarItem = UITabBarItem(title: nil, image: nil, tag: 1)
         recordListViewController.tabBarItem = UITabBarItem(title: "list", image: UIImage(systemName:"list.bullet"), tag: 2)
-        
-        if tabBarItem.tag == 1 {
-            UITabBar.appearance().tintColor = .systemRed
-        }
-        
         viewControllers = [mapViewController, emptyViewController, recordListViewController]
+        
+        recordButton.setImage(UIImage(systemName: "record.circle"), for: .normal)
+        recordButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 37), forImageIn: .normal)
+        recordButton.tintColor = .systemRed
     }
     
     private func configureLayout() {
+        tabBar.addSubview(recordButton)
         
+        recordButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
     }
 }
