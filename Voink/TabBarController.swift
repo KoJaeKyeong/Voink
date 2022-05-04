@@ -39,6 +39,7 @@ final class TabBarController: UITabBarController {
         recordButton.setImage(UIImage(systemName: "record.circle"), for: .normal)
         recordButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 37), forImageIn: .normal)
         recordButton.tintColor = .systemRed
+        recordButton.addTarget(self, action: #selector(recordButtonTapped), for: .touchUpInside)
     }
     
     private func configureLayout() {
@@ -49,5 +50,11 @@ final class TabBarController: UITabBarController {
             make.top.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
         }
+    }
+    
+    @objc private func recordButtonTapped() {
+        let recordViewController = RecordViewController()
+        recordViewController.modalPresentationStyle = .overFullScreen
+        present(recordViewController, animated: true)
     }
 }
