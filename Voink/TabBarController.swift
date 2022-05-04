@@ -34,6 +34,8 @@ final class TabBarController: UITabBarController {
         recordListViewController.tabBarItem = UITabBarItem(title: "list", image: UIImage(systemName:"list.bullet"), tag: 2)
         viewControllers = [mapViewController, emptyViewController, recordListViewController]
         
+        tabBar.items?[1].isEnabled = false
+        
         recordButton.setImage(UIImage(systemName: "record.circle"), for: .normal)
         recordButton.setPreferredSymbolConfiguration(UIImage.SymbolConfiguration(pointSize: 37), forImageIn: .normal)
         recordButton.tintColor = .systemRed
