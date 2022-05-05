@@ -89,3 +89,4 @@ fastlane/test_output
 
 iOSInjectionProject/
 Voink/Info.plist
+Voink/Storage.swift
