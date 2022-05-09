@@ -10,6 +10,13 @@ import GoogleMaps
 import CoreLocation
 
 struct MapViewModel {
+    var camera: GMSCameraPosition {
+        let locationManager = CLLocationManager()
+        guard let latitude = locationManager.location?.coordinate.latitude,
+              let longitude = locationManager.location?.coordinate.longitude else { return GMSCameraPosition() }
+        return GMSCameraPosition.camera(withLatitude: latitude, longitude: longitude, zoom: 15.0)
+    }
+    
     func reverseGeocode(coordinate: CLLocationCoordinate2D, addressLabel: UILabel, view: UIView) {
         let geocoder = GMSGeocoder()
 

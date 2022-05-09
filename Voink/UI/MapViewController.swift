@@ -43,6 +43,8 @@ final class MapViewController: UIViewController {
     }
     
     private func configureAttribute() {
+        mapView.camera = viewModel.camera
+        
         addressLabel.textAlignment = .left
     }
     
@@ -79,7 +81,6 @@ extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let location = locations.first else { return }
         
-        mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: 15)
         viewModel.reverseGeocode(coordinate: location.coordinate, addressLabel: addressLabel, view: view)
     }
     
