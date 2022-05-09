@@ -17,6 +17,8 @@ final class MapViewController: UIViewController {
     
     private let locationManager = CLLocationManager()
     
+    private let viewModel = MapViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
@@ -29,9 +31,7 @@ final class MapViewController: UIViewController {
     }
     
     private func configureLocationManager() {
-        mapView.delegate = self
         locationManager.delegate = self
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager.requestLocation()
             
@@ -43,7 +43,6 @@ final class MapViewController: UIViewController {
     }
     
     private func configureAttribute() {
-        addressLabel.text = "성남시 서현동"
         addressLabel.textAlignment = .left
     }
     
@@ -64,29 +63,15 @@ final class MapViewController: UIViewController {
         }
     }
     
-    private func reverseGeocode(coordinate: CLLocationCoordinate2D) {
-        let geocoder = GMSGeocoder()
-
-        geocoder.reverseGeocodeCoordinate(coordinate) { [weak self] response, error in
-        guard let self = self,
-              let address = response?.firstResult(),
-              let lines = address.lines else { return }
-
-            self.addressLabel.text = lines.joined(separator: "\n")
-            
-            UIView.animate(withDuration: 0.25) {
-                self.view.layoutIfNeeded()
-            }
-        }
-    }
 }
 
 extension MapViewController: CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        guard manager.authorizationStatus == .authorizedWhenInUse else { return }
+        guard manager.authorizationStatus == .authorizedWhenInUse,
+              let coordinate = manager.location?.coordinate else { return }
         
         manager.requestLocation()
-        
+        viewModel.reverseGeocode(coordinate: coordinate, addressLabel: addressLabel, view: view)
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
     }
@@ -95,15 +80,10 @@ extension MapViewController: CLLocationManagerDelegate {
         guard let location = locations.first else { return }
         
         mapView.camera = GMSCameraPosition(target: location.coordinate, zoom: 15)
+        viewModel.reverseGeocode(coordinate: location.coordinate, addressLabel: addressLabel, view: view)
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         print(error.localizedDescription)
-    }
-}
-
-extension MapViewController: GMSMapViewDelegate {
-    func mapView(_ mapView: GMSMapView, idleAt position: GMSCameraPosition) {
-        reverseGeocode(coordinate: position.target)
     }
 }
