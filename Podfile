@@ -8,4 +8,5 @@ target 'Voink' do
   # Pods for Voink
   pod 'SnapKit'
   pod 'GoogleMaps'
+  pod 'FirebaseFirestore'
 end
