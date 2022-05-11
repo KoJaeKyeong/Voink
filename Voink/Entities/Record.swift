@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RecordGroup {
+struct RecordGroup: Codable {
     let id: Int
     let category: String
     let clientId: String
@@ -18,16 +18,16 @@ struct RecordGroup {
     let displayLocation: String
     let latitude: Float
     let longitude: Float
-    let pathVisible: Float
+    let pathVisible: Bool
+    let recordList: [Record]
     let time: Int
     let title: String
     let totalLength: Int
     let type: String
     let visibleType: String
-    let recordList: [Record]
 }
 
-struct Record {
+struct Record: Codable {
     let location: Location
     let path: String
     let playtime: Int
@@ -35,7 +35,7 @@ struct Record {
     let title: String
 }
 
-struct Location {
+struct Location: Codable {
     let latitude: Float
     let longitude: Float
 }

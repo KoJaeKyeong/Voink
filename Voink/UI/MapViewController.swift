@@ -18,10 +18,16 @@ final class MapViewController: UIViewController {
     private let locationManager = CLLocationManager()
     
     private let viewModel = MapViewModel()
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
+        viewModel.addMarkerOnGoogleMap(map: mapView)
+        guard let latitude = locationManager.location?.coordinate.latitude,
+              let longitude = locationManager.location?.coordinate.longitude else { return }
+        let marker = GMSMarker()
+        marker.position = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        marker.map = mapView
     }
     
     private func configure() {
