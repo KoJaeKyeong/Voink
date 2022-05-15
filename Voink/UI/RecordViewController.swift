@@ -6,22 +6,32 @@
 //
 
 import UIKit
+import SnapKit
 
-class RecordViewController: UIViewController {
-
+final class RecordViewController: UIViewController {
+    
+    private lazy var recordView = RecordView()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        configure()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    private func configure() {
+        configureAttribute()
+        configureLayout()
     }
-    */
-
+    
+    private func configureAttribute() {
+        view.backgroundColor = UIColor(white: 0.7, alpha: 0.7)
+    }
+    
+    private func configureLayout() {
+        view.addSubview(recordView)
+        
+        recordView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            make.height.equalTo(230)
+        }
+    }
 }
