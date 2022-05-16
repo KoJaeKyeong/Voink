@@ -15,6 +15,7 @@ final class RecordListView: UITableView {
     
     override func layoutSubviews() {
         configure()
+        
     }
     
     private func configure() {
