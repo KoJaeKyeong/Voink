@@ -11,7 +11,7 @@ import SnapKit
 final class RecordListCell: UITableViewCell {
     
     let identifier = "recordListCell"
-    var delegate: RecordListView?
+    var delegate: RecordListViewController?
     
     lazy var playButton = UIButton()
     lazy var slider = UISlider()
