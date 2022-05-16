@@ -32,7 +32,7 @@ final class TabBarController: UITabBarController {
         mapViewController.tabBarItem = UITabBarItem(title: "map", image: UIImage(systemName: "map"), tag: 0)
         emptyViewController.tabBarItem = UITabBarItem(title: nil, image: nil, tag: 1)
         recordListViewController.tabBarItem = UITabBarItem(title: "list", image: UIImage(systemName:"list.bullet"), tag: 2)
-        viewControllers = [mapViewController, emptyViewController, recordListViewController]
+        viewControllers = [mapViewController, emptyViewController, UINavigationController(rootViewController: recordListViewController)]
         
         tabBar.items?[1].isEnabled = false
         
