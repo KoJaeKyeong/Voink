@@ -6,30 +6,56 @@
 //
 
 import UIKit
+import AVFAudio
+import GoogleMaps
+import CoreLocation
+import SnapKit
 
-final class RecordListViewController: UITableViewController {
+final class RecordListViewController: UIViewController {
     
     let viewModel = RecordListViewModel()
+    let player = AVAudioPlayer()
+    let recordListView = RecordListView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = 
+        configure()
     }
-
-    // MARK: - Table view data source
-
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.numberOfSections
-    }
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.numberOfRowsInSection(section: section)
-    }
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: RecordListCell().reuseIdentifier, for: indexPath) as? RecordListCell else { return UITableViewCell() }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
+        guard let coordinate = CLLocationManager().location?.coordinate else { return }
+        viewModel.reverseGeocode(coordinate: coordinate, navigationItem: navigationItem, view: view)
+    }
+    
+    private func configure() {
+        configureAttribute()
+        configureLayout()
+    }
+    
+    private func configureAttribute() {
+    }
+    
+    private func configureLayout() {
+        [recordListView].forEach { view.addSubview($0) }
         
-        return cell
+        recordListView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+}
+
+extension RecordListViewController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.first else { return }
+        
+        viewModel.reverseGeocode(coordinate: location.coordinate, navigationItem: navigationItem, view: view)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("error in record listView: \(error.localizedDescription)")
     }
 }

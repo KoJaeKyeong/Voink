@@ -6,15 +6,44 @@
 //
 
 import UIKit
+import SnapKit
 
 class RecordListHeaderCell: UITableViewHeaderFooterView {
-
-    /*
-    // Only override draw() if you perform custom drawing.
-    // An empty implementation adversely affects performance during animation.
-    override func draw(_ rect: CGRect) {
-        // Drawing code
+    
+    let identifier = "recordListHeaderCell"
+    
+    lazy var titleLabel = UITextField()
+    lazy var contentLabel = UITextView()
+    lazy var countOfRecordLabel = UILabel()
+    
+    override func layoutSubviews() {
+        configure()
     }
-    */
-
+    
+    private func configure() {
+        configureAttribute()
+        configureLayout()
+    }
+    
+    private func configureAttribute() {
+        
+    }
+    
+    private func configureLayout() {
+        [titleLabel, contentLabel, countOfRecordLabel].forEach { addSubview($0) }
+        
+        titleLabel.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview().inset(15)
+        }
+        
+        contentLabel.snp.makeConstraints { make in
+            make.top.equalTo(titleLabel.snp.bottom).offset(15)
+            make.leading.trailing.bottom.equalToSuperview().inset(15)
+        }
+        
+        countOfRecordLabel.snp.makeConstraints { make in
+            make.trailing.top.equalToSuperview().inset(15)
+            make.leading.equalTo(titleLabel.snp.trailing)
+        }
+    }
 }

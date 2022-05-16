@@ -33,26 +33,7 @@ final class FirestoreLogic {
         }
     }
     
-//    func fetchRecordGroups() async throws -> [RecordGroup] {
-//        var recordGroup = [RecordGroup]()
-//        let querySnapshot = try await db.collection("group").getDocuments()
-//        for documents in querySnapshot.documents {
-//            let jsonData = try JSONSerialization.data(withJSONObject: documents.data(), options: [])
-//            let decodedData = try JSONDecoder().decode(RecordGroup.self, from: jsonData)
-//            recordGroup.append(decodedData)
-//        }
-//        return recordGroup
-//    }
-    
     init() {
-//        Task.init {
-//            do {
-//                let recordGroups = try await fetchRecordGroups()
-//                print("record: \(recordGroups)")
-//            } catch {
-//
-//            }
-//        }
         fetchRecordGroupsWithEscaping { [weak self] data in
             guard let self = self else { return }
             self.recordGroups = data
