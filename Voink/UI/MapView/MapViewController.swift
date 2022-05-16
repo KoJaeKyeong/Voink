@@ -22,12 +22,11 @@ final class MapViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         viewModel.addMarkerOnGoogleMap(map: mapView)
-        guard let latitude = locationManager.location?.coordinate.latitude,
-              let longitude = locationManager.location?.coordinate.longitude else { return }
-        let marker = GMSMarker()
-        marker.position = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
-        marker.map = mapView
     }
     
     private func configure() {

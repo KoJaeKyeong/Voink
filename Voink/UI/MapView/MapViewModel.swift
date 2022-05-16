@@ -11,6 +11,7 @@ import CoreLocation
 
 struct MapViewModel {
     let firebaseLogic = FirestoreLogic()
+    
     var camera: GMSCameraPosition {
         let locationManager = CLLocationManager()
         guard let latitude = locationManager.location?.coordinate.latitude,
@@ -35,7 +36,6 @@ struct MapViewModel {
     
     func addMarkerOnGoogleMap(map: GMSMapView) {
         for recordGroup in firebaseLogic.recordGroups {
-            print("record: \(recordGroup)")
             let marker = GMSMarker()
             marker.position = CLLocationCoordinate2D(latitude: CLLocationDegrees(recordGroup.latitude), longitude: CLLocationDegrees(recordGroup.longitude))
             marker.map = map
