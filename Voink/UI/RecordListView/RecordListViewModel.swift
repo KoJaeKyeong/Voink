@@ -40,6 +40,10 @@ struct RecordListViewModel {
         return 70
     }
     
+    func itemURL(section: Int, row: Int) -> URL? {
+        return URL(string: firebaseLogic.recordGroups[section].recordList[row].path)
+    }
+    
     func totalTime(section: Int, row: Int) -> String {
         let timeInterval = firebaseLogic.recordGroups[section].recordList[row].playtime
         let minute = (timeInterval / 1000) / 60
@@ -60,5 +64,12 @@ struct RecordListViewModel {
                 view.layoutIfNeeded()
             }
         }
+    }
+    
+    func secondToString(sec: Double) -> String {
+        let totalSeconds = Int(sec)
+        let min = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%02d:%02d", min, seconds)
     }
 }

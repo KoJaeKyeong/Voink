@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import AVFAudio
+import AVFoundation
 import GoogleMaps
 import CoreLocation
 import SnapKit
@@ -14,8 +14,8 @@ import SnapKit
 final class RecordListViewController: UIViewController {
     
     let viewModel = RecordListViewModel()
-    let player = AVAudioPlayer()
-    let recordListView = UITableView()
+    let player = SimplePlayer.shared
+    let recordListView = UITableView(frame: .zero, style: .grouped)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,6 +27,15 @@ final class RecordListViewController: UIViewController {
         
         guard let coordinate = CLLocationManager().location?.coordinate else { return }
         viewModel.reverseGeocode(coordinate: coordinate, navigationItem: navigationItem, view: view)
+        
+        view.addSubview(recordListView)
+        
+        [recordListView].forEach { view.addSubview($0) }
+        
+        recordListView.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview()
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide)
+        }
     }
     
     private func configure() {
@@ -43,7 +52,7 @@ final class RecordListViewController: UIViewController {
     
     private func configureLayout() {
         [recordListView].forEach { view.addSubview($0) }
-        
+
         recordListView.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview()
             make.top.bottom.equalTo(view.safeAreaLayoutGuide)
@@ -93,10 +102,19 @@ extension RecordListViewController: UITableViewDataSource, UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: RecordListCell().identifier, for: indexPath) as? RecordListCell else { return UITableViewCell() }
-
+        
         cell.delegate = self
+        player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 10), queue: DispatchQueue.main) { time in
+            cell.currentTimeLabel.text = self.viewModel.secondToString(sec: self.player.currentTime)
+        }
+        cell.currentContentsURL = viewModel.itemURL(section: indexPath.section, row: indexPath.row)
         cell.totalTimeLabel.text = viewModel.totalTime(section: indexPath.section, row: indexPath.row)
-
+        
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+    }
+
 }

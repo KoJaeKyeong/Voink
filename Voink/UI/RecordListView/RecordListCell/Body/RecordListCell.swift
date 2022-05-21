@@ -7,16 +7,27 @@
 
 import UIKit
 import SnapKit
+import AVFoundation
 
 final class RecordListCell: UITableViewCell {
     
     let identifier = "recordListCell"
-    var delegate: RecordListViewController?
     
     lazy var playButton = UIButton()
     lazy var slider = UISlider()
     lazy var currentTimeLabel = UILabel()
     lazy var totalTimeLabel = UILabel()
+    
+    let viewModel = RecordListCellViewModel()
+    
+    var delegate: RecordListViewController?
+    var player: SimplePlayer?
+    
+    var prevContentsURL: URL? = nil
+    var currentContentsURL: URL?
+    
+    var isSeeking = false
+    var timeObserver: Any?
     
     override func layoutSubviews() {
         configure()
@@ -30,6 +41,10 @@ final class RecordListCell: UITableViewCell {
     private func configureAttribute() {
         let config = UIImage.SymbolConfiguration(pointSize: 35)
         playButton.setImage(UIImage(systemName: "play.fill", withConfiguration: config), for: .normal)
+        playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
+        
+        slider.addTarget(self, action: #selector(sliderEditingDidBegin), for: .editingDidBegin)
+        slider.addTarget(self, action: #selector(sliderEditingDidEnd), for: .editingDidEnd)
         
         currentTimeLabel.font = .systemFont(ofSize: 13)
         totalTimeLabel.font = .systemFont(ofSize: 13)
@@ -58,5 +73,31 @@ final class RecordListCell: UITableViewCell {
             make.trailing.equalTo(slider)
             make.top.equalTo(slider.snp.bottom)
         }
+    }
+    
+    @objc func playButtonTapped() {
+        guard let player = player,
+              let currentContentsURL = currentContentsURL,
+              let delegate = delegate else { return }
+        
+        if prevContentsURL == nil {
+            prevContentsURL = currentContentsURL
+            delegate.player.replaceCurrentItem(with: AVPlayerItem(url: currentContentsURL))
+            delegate.player.play()
+        } else if prevContentsURL == currentContentsURL {
+            if delegate.player.isPlaying {
+                delegate.player.pause()
+            } else {
+                delegate.player.play()
+            }
+        }
+    }
+    
+    @objc func sliderEditingDidBegin() {
+        isSeeking = true
+    }
+    
+    @objc func sliderEditingDidEnd() {
+        isSeeking = false
     }
 }
