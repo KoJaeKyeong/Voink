@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import CoreMedia
+import UIKit
 
 struct RecordListCellViewModel {
     func secondToString(sec: Double) -> String {
@@ -13,5 +15,9 @@ struct RecordListCellViewModel {
         let min = totalSeconds / 60
         let seconds = totalSeconds % 60
         return String(format: "%02d:%02d", min, seconds)
+    }
+    
+    func updateTime(time: CMTime, currentLabel: UILabel, player: SimplePlayer) {
+        currentLabel.text = secondToString(sec: player.currentTime)
     }
 }

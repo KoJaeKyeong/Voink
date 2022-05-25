@@ -19,18 +19,22 @@ final class RecordListCell: UITableViewCell {
     lazy var totalTimeLabel = UILabel()
     
     let viewModel = RecordListCellViewModel()
-    
-    var delegate: RecordListViewController?
     var player: SimplePlayer?
-    
-    var prevContentsURL: URL? = nil
-    var currentContentsURL: URL?
+    var delegate: RecordListCellDelegate?
     
     var isSeeking = false
     var timeObserver: Any?
     
     override func layoutSubviews() {
         configure()
+    }
+    
+    override func prepareForReuse() {
+        guard let player = player else { return }
+        player.pause()
+        player.seek(to: CMTime(seconds: 0, preferredTimescale: 100))
+        slider.value = 0.0
+        self.timeObserver = nil
     }
     
     private func configure() {
@@ -45,8 +49,10 @@ final class RecordListCell: UITableViewCell {
         
         slider.addTarget(self, action: #selector(sliderEditingDidBegin), for: .editingDidBegin)
         slider.addTarget(self, action: #selector(sliderEditingDidEnd), for: .editingDidEnd)
+        slider.addTarget(self, action: #selector(sliderValueChanged), for: .valueChanged)
         
         currentTimeLabel.font = .systemFont(ofSize: 13)
+        currentTimeLabel.text = "00:00"
         totalTimeLabel.font = .systemFont(ofSize: 13)
     }
     
@@ -56,6 +62,7 @@ final class RecordListCell: UITableViewCell {
         playButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(25)
             make.centerY.equalToSuperview()
+            make.width.height.equalTo(40)
         }
         
         slider.snp.makeConstraints { make in
@@ -76,21 +83,8 @@ final class RecordListCell: UITableViewCell {
     }
     
     @objc func playButtonTapped() {
-        guard let player = player,
-              let currentContentsURL = currentContentsURL,
-              let delegate = delegate else { return }
-        
-        if prevContentsURL == nil {
-            prevContentsURL = currentContentsURL
-            delegate.player.replaceCurrentItem(with: AVPlayerItem(url: currentContentsURL))
-            delegate.player.play()
-        } else if prevContentsURL == currentContentsURL {
-            if delegate.player.isPlaying {
-                delegate.player.pause()
-            } else {
-                delegate.player.play()
-            }
-        }
+        guard let delegate = delegate else { return }
+        delegate.playButtonTapped(cell: self)
     }
     
     @objc func sliderEditingDidBegin() {
@@ -99,5 +93,9 @@ final class RecordListCell: UITableViewCell {
     
     @objc func sliderEditingDidEnd() {
         isSeeking = false
+    }
+    
+    @objc func sliderValueChanged() {
+        
     }
 }

@@ -17,6 +17,11 @@ final class RecordListViewController: UIViewController {
     let player = SimplePlayer.shared
     let recordListView = UITableView(frame: .zero, style: .grouped)
     
+    var previousIndexPath: IndexPath? = nil
+    var previousCell: RecordListCell? = nil
+    
+    var timeObserver: Any?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
@@ -48,6 +53,7 @@ final class RecordListViewController: UIViewController {
         recordListView.delegate = self
         recordListView.register(RecordListCell.self, forCellReuseIdentifier: RecordListCell().identifier)
         recordListView.register(RecordListHeaderCell.self, forHeaderFooterViewReuseIdentifier: RecordListHeaderCell().identifier)
+        recordListView.separatorStyle = .singleLine
     }
     
     private func configureLayout() {
@@ -103,18 +109,88 @@ extension RecordListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: RecordListCell().identifier, for: indexPath) as? RecordListCell else { return UITableViewCell() }
         
+        cell.player = player
         cell.delegate = self
-        player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 1, preferredTimescale: 10), queue: DispatchQueue.main) { time in
-            cell.currentTimeLabel.text = self.viewModel.secondToString(sec: self.player.currentTime)
-        }
-        cell.currentContentsURL = viewModel.itemURL(section: indexPath.section, row: indexPath.row)
+        cell.timeObserver = timeObserver
         cell.totalTimeLabel.text = viewModel.totalTime(section: indexPath.section, row: indexPath.row)
         
         return cell
     }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-    }
+}
 
+// MARK: Logic for TableView Cell
+extension RecordListViewController {
+    private func updatePlayButtonUI(sender: UIButton) {
+        let config = UIImage.SymbolConfiguration(pointSize: 35)
+        if player.isPlaying {
+            sender.setImage(UIImage(systemName: "pause.fill", withConfiguration: config), for: .normal)
+        } else {
+            sender.setImage(UIImage(systemName: "play.fill", withConfiguration: config), for: .normal)
+        }
+    }
+    
+    private func addPeriodicTimeObserver(cell: RecordListCell) {
+        timeObserver = player.addPeriodicTimeObserver(forInterval: CMTime(seconds: 0.01, preferredTimescale: 100),queue: .main) { [weak self] time in
+            guard let self = self else { return }
+            self.updateTime(cell: cell, time: time)
+            if self.player.currentTime == self.player.totalDurationTime {
+                self.playEndedOrItemChanged(cell: cell)
+            }
+        }
+    }
+    
+    private func updateTime(cell: RecordListCell, time: CMTime) {
+        cell.currentTimeLabel.text = viewModel.secondToString(sec: player.currentTime)
+        
+        if cell.isSeeking == false {
+            cell.slider.value = Float(player.currentTime/player.totalDurationTime)
+        }
+    }
+    
+    private func playEndedOrItemChanged(cell: RecordListCell) {
+        if timeObserver != nil {
+            player.removeTimeObserver(observer: timeObserver!)
+        }
+        
+        player.pause()
+        player.seek(to: CMTime(seconds: 0, preferredTimescale: 100))
+        
+        self.timeObserver = nil
+        cell.currentTimeLabel.text = "00:00"
+        updatePlayButtonUI(sender: cell.playButton)
+        cell.slider.value = 0.0
+    }
+}
+
+extension RecordListViewController: RecordListCellDelegate {
+    func playButtonTapped(cell: RecordListCell) {
+        guard let indexPath = recordListView.indexPath(for: cell),
+              let url = viewModel.itemURL(section: indexPath.section, row: indexPath.row) else { return }
+        
+        if previousIndexPath != nil {
+            previousCell = recordListView.cellForRow(at: previousIndexPath!) as? RecordListCell
+        }
+        print(previousIndexPath == indexPath)
+        if previousIndexPath == indexPath {
+            if player.isPlaying {
+                player.pause()
+            } else {
+                player.play()
+            }
+        } else {
+            if previousCell != nil {
+                playEndedOrItemChanged(cell: previousCell!)
+            }
+            player.replaceCurrentItem(with: AVPlayerItem(url: url))
+            if player.isPlaying {
+                player.pause()
+            } else {
+                player.play()
+            }
+            addPeriodicTimeObserver(cell: cell)
+            previousIndexPath = indexPath
+        }
+        
+        updatePlayButtonUI(sender: cell.playButton)
+    }
 }

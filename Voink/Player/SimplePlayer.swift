@@ -46,8 +46,12 @@ class SimplePlayer {
         player.replaceCurrentItem(with: item)
     }
     
-    func addPeriodicTimeObserver(forInterval: CMTime, queue: DispatchQueue?, using: @escaping (CMTime) -> Void) {
-        player.addPeriodicTimeObserver(forInterval: forInterval, queue: queue, using: using)
+    func addPeriodicTimeObserver(forInterval: CMTime, queue: DispatchQueue?, using: @escaping (CMTime) -> Void) -> Any {
+        return player.addPeriodicTimeObserver(forInterval: forInterval, queue: queue, using: using)
+    }
+    
+    func removeTimeObserver(observer: Any) {
+        player.removeTimeObserver(observer)
     }
 }
 

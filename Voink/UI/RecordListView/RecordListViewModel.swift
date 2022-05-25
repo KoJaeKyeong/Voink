@@ -11,6 +11,7 @@ import GoogleMaps
 
 struct RecordListViewModel {
     let firebaseLogic = FirestoreLogic()
+    let player = SimplePlayer()
     
     var numberOfSections: Int {
         return firebaseLogic.recordGroups.count
