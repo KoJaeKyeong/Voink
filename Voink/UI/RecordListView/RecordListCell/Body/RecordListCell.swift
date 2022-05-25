@@ -18,7 +18,6 @@ final class RecordListCell: UITableViewCell {
     lazy var currentTimeLabel = UILabel()
     lazy var totalTimeLabel = UILabel()
     
-    let viewModel = RecordListCellViewModel()
     var player: SimplePlayer?
     var delegate: RecordListCellDelegate?
     
@@ -96,6 +95,11 @@ final class RecordListCell: UITableViewCell {
     }
     
     @objc func sliderValueChanged() {
-        
+        guard let player = player,
+              let currentItem = player.currentItem else { return }
+        let position = Double(slider.value)
+        let seconds = currentItem.duration.seconds * position
+        let time = CMTime(seconds: seconds, preferredTimescale: 100)
+        player.seek(to: time)
     }
 }

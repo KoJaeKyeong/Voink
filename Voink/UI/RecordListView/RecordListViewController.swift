@@ -182,11 +182,7 @@ extension RecordListViewController: RecordListCellDelegate {
                 playEndedOrItemChanged(cell: previousCell!)
             }
             player.replaceCurrentItem(with: AVPlayerItem(url: url))
-            if player.isPlaying {
-                player.pause()
-            } else {
-                player.play()
-            }
+            player.play()
             addPeriodicTimeObserver(cell: cell)
             previousIndexPath = indexPath
         }
