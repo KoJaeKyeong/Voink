@@ -24,6 +24,7 @@ final class RecordViewController: UIViewController {
     
     private func configureAttribute() {
         view.backgroundColor = UIColor(white: 0.7, alpha: 0.7)
+        recordView.delegate = self
     }
     
     private func configureLayout() {
@@ -33,5 +34,13 @@ final class RecordViewController: UIViewController {
             make.leading.trailing.bottom.equalToSuperview()
             make.height.equalTo(230)
         }
+    }
+}
+
+// MARK: RecordViewDelegate 구현
+
+extension RecordViewController: RecordViewDelegate {
+    func stopButtonTapped() {
+        presentingViewController?.dismiss(animated: true)
     }
 }

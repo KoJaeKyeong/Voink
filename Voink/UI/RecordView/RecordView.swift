@@ -13,12 +13,12 @@ final class RecordView: UIView {
     private lazy var addressLabel = UILabel()
     private lazy var timeLabel = UILabel()
     private lazy var stopButton = UIButton()
-    var totalSecond = Int()
-    var timer:Timer?
+    
+    private let viewModel = RecordViewModel()
+    var delegate: RecordViewDelegate?
     
     override func layoutSubviews() {
         configure()
-        startTimer()
     }
     
     private func configure() {
@@ -29,32 +29,33 @@ final class RecordView: UIView {
     private func configureAttribute() {
         backgroundColor = .systemBackground
         
+        stopButton.configuration = viewModel.configuration
+        stopButton.setTitle("Stop", for: .normal)
+        stopButton.setTitleColor(.systemBackground, for: .normal)
+        stopButton.setTitleColor(.systemBackground, for: .highlighted)
+
+        stopButton.addTarget(self, action: #selector(stopButtonTapped), for: .touchUpInside)
     }
     
     private func configureLayout() {
         [addressLabel, timeLabel, stopButton].forEach { addSubview($0) }
         
+        addressLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(15)
+            make.leading.trailing.equalToSuperview().inset(10)
+        }
+        
         timeLabel.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
         }
+        
+        stopButton.snp.makeConstraints { make in
+            make.leading.trailing.equalToSuperview().inset(10)
+            make.bottom.equalToSuperview().inset(10)
+        }
     }
     
-    func startTimer(){
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(countdown), userInfo: nil, repeats: true)
-    }
-
-    @objc func countdown() {
-        var hours: Int
-        var minutes: Int
-        var seconds: Int
-
-        if totalSecond == 0 {
-            timer?.invalidate()
-        }
-        totalSecond = totalSecond + 1
-        hours = totalSecond / 3600
-        minutes = totalSecond / 60 % 60
-        seconds = totalSecond % 60
-        timeLabel.text = String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+    @objc func stopButtonTapped() {
+        delegate?.stopButtonTapped()
     }
 }
