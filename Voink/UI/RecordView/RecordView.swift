@@ -7,6 +7,8 @@
 
 import UIKit
 import SnapKit
+import GoogleMaps
+import CoreLocation
 
 final class RecordView: UIView {
         
@@ -14,6 +16,7 @@ final class RecordView: UIView {
     private lazy var timeLabel = UILabel()
     private lazy var stopButton = UIButton()
     
+    private let locationManager = CLLocationManager()
     private let viewModel = RecordViewModel()
     var delegate: RecordViewDelegate?
     
@@ -27,13 +30,17 @@ final class RecordView: UIView {
     }
     
     private func configureAttribute() {
+        guard let location = locationManager.location else { return }
         backgroundColor = .systemBackground
         
-        stopButton.configuration = viewModel.configuration
+        viewModel.reverseGeocode(coordinate: location.coordinate, addressLabel: addressLabel, view: self)
+        addressLabel.textAlignment = .center
+        addressLabel.font = .boldSystemFont(ofSize: 17)
+        
+        stopButton.configuration = viewModel.stopButtonConfiguration
         stopButton.setTitle("Stop", for: .normal)
         stopButton.setTitleColor(.systemBackground, for: .normal)
         stopButton.setTitleColor(.systemBackground, for: .highlighted)
-
         stopButton.addTarget(self, action: #selector(stopButtonTapped), for: .touchUpInside)
     }
     

@@ -23,10 +23,11 @@ struct MapViewModel {
         let geocoder = GMSGeocoder()
 
         geocoder.reverseGeocodeCoordinate(coordinate) { response, error in
-        guard let address = response?.firstResult(),
-              let lines = address.lines else { return }
-
-            addressLabel.text = lines.joined(separator: "\n")
+            guard let address = response?.firstResult(),
+                  let locality = address.locality,
+                  let subLocality = address.subLocality else { return }
+            
+            addressLabel.text = "\(locality) \(subLocality)"
             
             UIView.animate(withDuration: 0.25) {
                 view.layoutIfNeeded()
