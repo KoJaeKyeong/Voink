@@ -32,7 +32,7 @@ final class RecordViewController: UIViewController {
         
         recordView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
-            make.height.equalTo(230)
+            make.height.equalTo(200)
         }
     }
 }

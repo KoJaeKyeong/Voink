@@ -14,6 +14,7 @@ final class RecordView: UIView {
         
     private lazy var addressLabel = UILabel()
     private lazy var timeLabel = UILabel()
+    private lazy var recordLabel = UILabel()
     private lazy var stopButton = UIButton()
     
     private let locationManager = CLLocationManager()
@@ -35,7 +36,13 @@ final class RecordView: UIView {
         
         viewModel.reverseGeocode(coordinate: location.coordinate, addressLabel: addressLabel, view: self)
         addressLabel.textAlignment = .center
-        addressLabel.font = .boldSystemFont(ofSize: 17)
+        addressLabel.font = .boldSystemFont(ofSize: 20)
+        
+        recordLabel.text = "Now Recording..."
+        recordLabel.textColor = .systemRed
+        
+        timeLabel.text = "00:00.00"
+        timeLabel.font = .systemFont(ofSize: 18)
         
         stopButton.configuration = viewModel.stopButtonConfiguration
         stopButton.setTitle("Stop", for: .normal)
@@ -45,20 +52,26 @@ final class RecordView: UIView {
     }
     
     private func configureLayout() {
-        [addressLabel, timeLabel, stopButton].forEach { addSubview($0) }
+        [addressLabel, timeLabel, recordLabel, stopButton].forEach { addSubview($0) }
         
         addressLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(15)
-            make.leading.trailing.equalToSuperview().inset(10)
+            make.top.equalToSuperview().offset(20)
+            make.centerX.equalToSuperview()
         }
         
         timeLabel.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-25)
+        }
+        
+        recordLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(20)
         }
         
         stopButton.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(10)
-            make.bottom.equalToSuperview().inset(10)
+            make.bottom.equalToSuperview().offset(-15)
         }
     }
     
