@@ -9,4 +9,5 @@ target 'Voink' do
   pod 'SnapKit'
   pod 'GoogleMaps'
   pod 'FirebaseFirestore'
+  pod 'Firebase/Storage'
 end

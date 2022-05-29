@@ -9,17 +9,18 @@ import UIKit
 import SnapKit
 import AVFoundation
 import FirebaseFirestore
-import FirebaseCore
+import FirebaseStorage
 
 final class RecordViewController: UIViewController {
     
     private lazy var recordView = RecordView()
     let db = Firestore.firestore()
-    
+    let s = Storage.storage().reference()
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
         checkRecordPermission()
+        print(s)
     }
     
     private func configure() {
