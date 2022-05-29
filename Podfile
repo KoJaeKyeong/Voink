@@ -10,4 +10,5 @@ target 'Voink' do
   pod 'GoogleMaps'
   pod 'FirebaseFirestore'
   pod 'Firebase/Storage'
+  pod 'FirebaseAuth'
 end

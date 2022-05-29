@@ -10,16 +10,20 @@ import SnapKit
 import AVFoundation
 import FirebaseFirestore
 import FirebaseStorage
+import FirebaseAuth
 
 final class RecordViewController: UIViewController {
     
     private lazy var recordView = RecordView()
-    
+    let db = Firestore.firestore()
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
         checkRecordPermission()
-        print(getFileURL())
+        let s = Storage.storage().reference().child("voices")
+        let b = db.collection("group").collectionID
+        let user = Auth.auth().currentUser
+        print(user!)
     }
     
     private func configure() {
@@ -66,10 +70,10 @@ final class RecordViewController: UIViewController {
         return isAudioRecordingGranted
     }
     
-    private func getFileURL() -> String {
-        let s = Storage.storage().reference().child("voices")
-        return s
-    }
+//    private func getFileURL() -> String {
+//        let s = Storage.storage().reference().child("voices")
+//        return s
+//    }
 }
 
 // MARK: AVAudioRecorderDelegate 구현
