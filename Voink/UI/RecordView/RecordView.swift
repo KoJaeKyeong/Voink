@@ -9,9 +9,11 @@ import UIKit
 import SnapKit
 import GoogleMaps
 import CoreLocation
+import AVFoundation
 
 final class RecordView: UIView {
         
+    private lazy var currentCountOfRecordLabel = UILabel()
     private lazy var addressLabel = UILabel()
     private lazy var timeLabel = UILabel()
     private lazy var recordLabel = UILabel()
@@ -20,6 +22,8 @@ final class RecordView: UIView {
     private let locationManager = CLLocationManager()
     private let viewModel = RecordViewModel()
     var delegate: RecordViewDelegate?
+    
+    var records = [Record]()
     
     override func layoutSubviews() {
         configure()
@@ -33,6 +37,9 @@ final class RecordView: UIView {
     private func configureAttribute() {
         guard let location = locationManager.location else { return }
         backgroundColor = .systemBackground
+        
+        currentCountOfRecordLabel.text = "Count Of Record: 2"
+        currentCountOfRecordLabel.font = .systemFont(ofSize: 14)
         
         viewModel.reverseGeocode(coordinate: location.coordinate, addressLabel: addressLabel, view: self)
         addressLabel.textAlignment = .center
@@ -52,25 +59,30 @@ final class RecordView: UIView {
     }
     
     private func configureLayout() {
-        [addressLabel, timeLabel, recordLabel, stopButton].forEach { addSubview($0) }
+        [currentCountOfRecordLabel,addressLabel, timeLabel, recordLabel, stopButton].forEach { addSubview($0) }
+        
+        currentCountOfRecordLabel.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.leading.trailing.equalToSuperview().inset(10)
+        }
         
         addressLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
+            make.top.equalTo(currentCountOfRecordLabel.snp.bottom).offset(10)
             make.centerX.equalToSuperview()
         }
         
         timeLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(-25)
+            make.top.equalTo(addressLabel.snp.bottom).offset(18)
         }
         
         recordLabel.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.centerY.equalToSuperview().offset(20)
+            make.top.equalTo(timeLabel.snp.bottom).offset(18)
         }
         
         stopButton.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(10)
+            make.left.right.equalToSuperview().inset(10)
             make.bottom.equalToSuperview().offset(-15)
         }
     }

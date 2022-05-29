@@ -56,15 +56,17 @@ struct RecordListViewModel {
         let geocoder = GMSGeocoder()
 
         geocoder.reverseGeocodeCoordinate(coordinate) { response, error in
-        guard let address = response?.firstResult(),
-              let lines = address.lines else { return }
+            guard let address = response?.firstResult(),
+                  let locality = address.locality,
+                  let subLocality = address.subLocality else { return }
             
-            navigationItem.title = lines.joined(separator: "\n")
-            
+            navigationItem.title = "\(locality) \(subLocality)"
+
             UIView.animate(withDuration: 0.25) {
                 view.layoutIfNeeded()
             }
         }
+        
     }
     
     func secondToString(sec: Double) -> String {

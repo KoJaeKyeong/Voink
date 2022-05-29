@@ -19,6 +19,15 @@ struct RecordViewModel {
         return configuration
     }
     
+    var cancelButtonConfiguration: UIButton.Configuration {
+        var configuration = UIButton.Configuration.tinted()
+        var background = UIButton.Configuration.tinted().background
+        background.backgroundColor = .systemGray
+        background.cornerRadius = 10
+        configuration.background = background
+        return configuration
+    }
+    
     func reverseGeocode(coordinate: CLLocationCoordinate2D, addressLabel: UILabel, view: UIView) {
         let geocoder = GMSGeocoder()
 
