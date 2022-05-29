@@ -14,13 +14,12 @@ import FirebaseStorage
 final class RecordViewController: UIViewController {
     
     private lazy var recordView = RecordView()
-    let db = Firestore.firestore()
-    let s = Storage.storage().reference()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
         checkRecordPermission()
-        print(s)
+        print(getFileURL())
     }
     
     private func configure() {
@@ -68,9 +67,8 @@ final class RecordViewController: UIViewController {
     }
     
     private func getFileURL() -> String {
-        let collectionReference = db.collection("group")
-        let documentReference = collectionReference.document()
-        return documentReference.path
+        let s = Storage.storage().reference().child("voices")
+        return s
     }
 }
 
