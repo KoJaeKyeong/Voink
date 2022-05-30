@@ -11,4 +11,7 @@ target 'Voink' do
   pod 'FirebaseFirestore'
   pod 'Firebase/Storage'
   pod 'FirebaseAuth'
+  pod 'FBSDKCoreKit'
+  pod 'FBSDKLoginKit'
+  pod 'FBSDKShareKit'
 end
