@@ -23,7 +23,6 @@ final class RecordViewController: UIViewController {
         let s = Storage.storage().reference().child("voices")
         let b = db.collection("group").collectionID
         let user = Auth.auth().currentUser
-        print(user!)
     }
     
     private func configure() {

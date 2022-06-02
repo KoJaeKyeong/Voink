@@ -8,12 +8,15 @@
 import UIKit
 import GoogleMaps
 import FirebaseCore
+import FBSDKCoreKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        ApplicationDelegate.shared.application(application, didFinishLaunchingWithOptions: launchOptions)
+        
         GMSServices.provideAPIKey(KeyStorage().googleMapsAPIKey)
         FirebaseApp.configure()
         return true

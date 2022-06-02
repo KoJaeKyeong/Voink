@@ -79,6 +79,7 @@ extension MapViewController: CLLocationManagerDelegate {
         
         manager.requestLocation()
         viewModel.reverseGeocode(coordinate: coordinate, addressLabel: addressLabel, view: view)
+        mapView.camera = viewModel.camera
         mapView.isMyLocationEnabled = true
         mapView.settings.myLocationButton = true
     }
