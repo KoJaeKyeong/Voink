@@ -9,6 +9,7 @@ import UIKit
 import SnapKit
 import FBSDKLoginKit
 import FBSDKCoreKit
+import FirebaseAuth
 
 final class LoginViewController: UIViewController {
     

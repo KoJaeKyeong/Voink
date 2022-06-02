@@ -20,9 +20,6 @@ final class RecordViewController: UIViewController {
         super.viewDidLoad()
         configure()
         checkRecordPermission()
-        let s = Storage.storage().reference().child("voices")
-        let b = db.collection("group").collectionID
-        let user = Auth.auth().currentUser
     }
     
     private func configure() {
@@ -69,10 +66,19 @@ final class RecordViewController: UIViewController {
         return isAudioRecordingGranted
     }
     
-//    private func getFileURL() -> String {
-//        let s = Storage.storage().reference().child("voices")
-//        return s
-//    }
+    func getDocumentsDirectory() -> URL
+    {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        let documentsDirectory = paths[0]
+        return documentsDirectory
+    }
+
+    func getFileUrl() -> URL
+    {
+        let filename = "myRecording.m4a"
+        let filePath = getDocumentsDirectory().appendingPathComponent(filename)
+    return filePath
+    }
 }
 
 // MARK: AVAudioRecorderDelegate 구현
