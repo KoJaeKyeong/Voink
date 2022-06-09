@@ -43,4 +43,12 @@ struct RecordViewModel {
             }
         }
     }
+    
+    func showAlert(title: String?, message: String?, viewController: UIViewController) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .default)
+        
+        alertController.addAction(action)
+        viewController.present(alertController, animated: false, completion: nil)
+    }
 }

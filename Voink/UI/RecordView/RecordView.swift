@@ -15,16 +15,14 @@ final class RecordView: UIView {
         
     private lazy var currentCountOfRecordLabel = UILabel()
     private lazy var addressLabel = UILabel()
-    private lazy var timeLabel = UILabel()
+    lazy var timeLabel = UILabel()
     private lazy var recordLabel = UILabel()
     private lazy var stopButton = UIButton()
     
     private let locationManager = CLLocationManager()
     private let viewModel = RecordViewModel()
     var delegate: RecordViewDelegate?
-    
-    var records = [Record]()
-    
+        
     override func layoutSubviews() {
         configure()
     }
@@ -48,7 +46,6 @@ final class RecordView: UIView {
         recordLabel.text = "Now Recording..."
         recordLabel.textColor = .systemRed
         
-        timeLabel.text = "00:00.00"
         timeLabel.font = .systemFont(ofSize: 18)
         
         stopButton.configuration = viewModel.stopButtonConfiguration

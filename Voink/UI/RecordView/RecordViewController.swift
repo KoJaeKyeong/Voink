@@ -15,11 +15,17 @@ import FirebaseAuth
 final class RecordViewController: UIViewController {
     
     private lazy var recordView = RecordView()
+    let viewModel = RecordViewModel()
     let db = Firestore.firestore()
+    
+    var isAudioRecordingGranted = false
+    var audioRecorder: AVAudioRecorder?
+    var timer: Timer?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
-        checkRecordPermission()
+        startRecording()
     }
     
     private func configure() {
@@ -41,8 +47,13 @@ final class RecordViewController: UIViewController {
         }
     }
     
+    private func startRecording() {
+        setupRecorder(isAudioRecordingGranted: checkRecordPermission())
+        audioRecorder?.record()
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateAudioMeter(timer:)), userInfo: nil, repeats: true)
+    }
+    
     private func checkRecordPermission() -> Bool {
-        var isAudioRecordingGranted = false
         switch AVAudioSession.sharedInstance().recordPermission {
         case .granted:
             isAudioRecordingGranted = true
@@ -51,7 +62,7 @@ final class RecordViewController: UIViewController {
             isAudioRecordingGranted = false
             break
         case .undetermined:
-            AVAudioSession.sharedInstance().requestRecordPermission { allowed in
+            AVAudioSession.sharedInstance().requestRecordPermission { [self] allowed in
                 if allowed {
                     isAudioRecordingGranted = true
                 } else {
@@ -66,29 +77,71 @@ final class RecordViewController: UIViewController {
         return isAudioRecordingGranted
     }
     
-    func getDocumentsDirectory() -> URL
-    {
+    private func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         let documentsDirectory = paths[0]
         return documentsDirectory
     }
 
-    func getFileUrl() -> URL
-    {
+    private func getFileUrl() -> URL {
         let filename = "myRecording.m4a"
         let filePath = getDocumentsDirectory().appendingPathComponent(filename)
-    return filePath
+        return filePath
+    }
+    
+    private func setupRecorder(isAudioRecordingGranted: Bool) {
+        if isAudioRecordingGranted {
+            let session = AVAudioSession.sharedInstance()
+            do {
+                try session.setCategory(.record)
+                try session.setActive(true)
+                let settings = [
+                    AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+                    AVSampleRateKey: 44100,
+                    AVNumberOfChannelsKey: 2,
+                    AVEncoderAudioQualityKey:AVAudioQuality.high.rawValue
+                ]
+                audioRecorder = try AVAudioRecorder(url: getFileUrl(), settings: settings)
+                audioRecorder?.delegate = self
+                audioRecorder?.isMeteringEnabled = true
+                audioRecorder?.prepareToRecord()
+            }
+            catch let error {
+                print("record setting error: \(error.localizedDescription)")
+            }
+        } else {
+            
+        }
+    }
+    
+    @objc func updateAudioMeter(timer: Timer) {
+        guard let audioRecorder = audioRecorder else { return }
+        if audioRecorder.isRecording {
+            print("currentTime: \(audioRecorder.currentTime)")
+            let min = Int((audioRecorder.currentTime) / 60)
+            let sec = Int(audioRecorder.currentTime.truncatingRemainder(dividingBy: 60))
+            recordView.timeLabel.text = String(format: "%02d:%02d", min, sec)
+            audioRecorder.updateMeters()
+        }
     }
 }
 
 // MARK: AVAudioRecorderDelegate 구현
 extension RecordViewController: AVAudioRecorderDelegate {
-    
+    func audioRecorderDidFinishRecording(_ recorder: AVAudioRecorder, successfully flag: Bool) {
+        if !flag {
+            viewModel.showAlert(title: "Failed to record", message: nil, viewController: self)
+        }
+    }
 }
 
 // MARK: RecordViewDelegate 구현
 extension RecordViewController: RecordViewDelegate {
     func stopButtonTapped() {
+        print("finished record!!!!!!!!!")
+        audioRecorder?.stop()
+        audioRecorder = nil
+        timer?.invalidate()
         presentingViewController?.dismiss(animated: true)
     }
 }
