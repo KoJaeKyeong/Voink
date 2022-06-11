@@ -10,10 +10,13 @@ import SnapKit
 import FBSDKLoginKit
 import FBSDKCoreKit
 import FirebaseAuth
+import FirebaseFunctions
 
 final class LoginViewController: UIViewController {
     
-    lazy var facebookLoginButton = FBLoginButton()
+    private lazy var functions = Functions.functions()
+    
+    private lazy var facebookLoginButton = FBLoginButton()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,7 +26,6 @@ final class LoginViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if let token = AccessToken.current, !token.isExpired {
-            facebookLoginButton.isHidden = true
             let tabBarController = TabBarController()
             tabBarController.modalPresentationStyle = .overFullScreen
             present(tabBarController, animated: true, completion: nil)
@@ -36,6 +38,9 @@ final class LoginViewController: UIViewController {
     }
     
     private func configureAttribute() {
+        if let token = AccessToken.current, !token.isExpired {
+            facebookLoginButton.isHidden = true
+        }
         facebookLoginButton.delegate = self
         facebookLoginButton.permissions = ["public_profile", "email"]
     }
