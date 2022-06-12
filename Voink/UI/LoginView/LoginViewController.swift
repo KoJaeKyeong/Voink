@@ -17,10 +17,15 @@ final class LoginViewController: UIViewController {
     private lazy var functions = Functions.functions()
     
     private lazy var facebookLoginButton = FBLoginButton()
-    
+    private let viewModel = LoginViewModel()
+    private var serverDomain = ""
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
+        
+        Task {
+            serverDomain = try await viewModel.fetchServerDomain()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -52,6 +57,8 @@ final class LoginViewController: UIViewController {
             make.center.equalToSuperview()
         }
     }
+    
+    
 }
 
 extension LoginViewController: LoginButtonDelegate {
