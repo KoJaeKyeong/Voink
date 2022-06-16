@@ -8,8 +8,8 @@ import Foundation
 
 @objc protocol ServerCommunication {
     @objc optional func getHandshake()
-    @objc optional func postLoginToken()
-    @objc optional func fetchLoginToken()
+    @objc optional func postFacebookLoginToken()
+    @objc optional func getLoginToken()
     @objc optional func postRecord()
     @objc optional func fetchRecord()
 }

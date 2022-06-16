@@ -58,6 +58,7 @@ final class LoginViewController: UIViewController {
 extension LoginViewController: LoginButtonDelegate {
     func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
         if error == nil {
+            postFacebookLoginToken()
             loginButton.isHidden = true
             let tabBarController = TabBarController()
             tabBarController.modalPresentationStyle = .overFullScreen
@@ -101,16 +102,26 @@ extension LoginViewController: ServerCommunication {
         dataTask.resume()
     }
     
-    func postLoginToken() {
-        let url = URL(string: "handshake", relativeTo: URL(string: KeyStorage().serverURL))
-        
+    func postFacebookLoginToken() {
+        guard let url = URL(string: "auth/login/facebook", relativeTo: URL(string: KeyStorage().serverURL)) else { return }
         let session = URLSession(configuration: .default)
-//        let dataTask = session.dataTask(with: url) { [weak self] data, response, error in
-//            guard error == nil,
-//                  let response = response as? HTTPURLResponse,
-//                  200..<300 ~= response.statusCode else { return }
-//        }
-//
-//        dataTask.resume()
+        var request = URLRequest(url: url)
+        print("token: \(AccessToken.current?.tokenString)")
+        let body = try? JSONSerialization.data(withJSONObject: ["accessToken": AccessToken.current?.tokenString])
+        request.timeoutInterval = 10
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body
+        let dataTask = session.dataTask(with: request) { [weak self] data, response, error in
+            guard error == nil,
+                  let response = response as? HTTPURLResponse,
+                  200..<300 ~= response.statusCode,
+                  let data = data,
+                  let decodedData = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return }
+            
+            print("decodedData \(decodedData)")
+        }
+
+        dataTask.resume()
     }
 }
