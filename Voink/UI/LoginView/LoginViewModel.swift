@@ -5,14 +5,14 @@
 //  Created by Jae Kyeong Ko on 2022/06/09.
 //
 
-import FirebaseFunctions
+import UIKit
 
-class LoginViewModel {
-    private lazy var functions = Functions.functions()
-    
-    func fetchServerDomain() async throws -> String {
-        let data = try await functions.httpsCallable("serverInfo").call().data as? [String: Any]
-        let serverDomain = data?["server_url"] as? String
-        return serverDomain ?? ""
+struct LoginViewModel {
+    func showAlert(title: String?, message: String?, viewController: UIViewController) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .default)
+        
+        alertController.addAction(action)
+        viewController.present(alertController, animated: false, completion: nil)
     }
 }

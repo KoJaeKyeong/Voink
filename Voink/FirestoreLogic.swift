@@ -22,7 +22,6 @@ final class FirestoreLogic {
                 do {
                     let jsonData = try JSONSerialization.data(withJSONObject: document.data(), options: [])
                     let decodedData = try JSONDecoder().decode(RecordGroup.self, from: jsonData)
-                    
                     self.recordGroups.append(decodedData)
                 } catch {
                     

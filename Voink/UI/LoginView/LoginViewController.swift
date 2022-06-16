@@ -18,14 +18,10 @@ final class LoginViewController: UIViewController {
     
     private lazy var facebookLoginButton = FBLoginButton()
     private let viewModel = LoginViewModel()
-    private var serverDomain = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        configure()
-        
-        Task {
-            serverDomain = try await viewModel.fetchServerDomain()
-        }
+        getHandshake()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -57,8 +53,6 @@ final class LoginViewController: UIViewController {
             make.center.equalToSuperview()
         }
     }
-    
-    
 }
 
 extension LoginViewController: LoginButtonDelegate {
@@ -73,5 +67,50 @@ extension LoginViewController: LoginButtonDelegate {
 
     func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
         print("Log Out")
+    }
+}
+
+extension LoginViewController: ServerCommunication {
+    func getHandshake() {
+        guard let url = URL(string: "handshake", relativeTo: URL(string: KeyStorage().serverURL)) else { return }
+        let session = URLSession(configuration: .default)
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 10
+        
+        let dataTask = session.dataTask(with: request) { [weak self] data, response, error in
+            guard error == nil,
+                  let response = response as? HTTPURLResponse,
+                  let self = self else {
+                DispatchQueue.main.async {
+                    self?.viewModel.showAlert(title: "Sorry, can't execute Voink", message: "Cannot connect to server", viewController: self ?? UIViewController())
+                }
+                return
+            }
+            
+            if response.statusCode == 200 {
+                DispatchQueue.main.async {
+                    self.configure()
+                }
+            } else {
+                DispatchQueue.main.async {
+                    self.viewModel.showAlert(title: "Sorry, can't execute Voink", message: "Cannot connect to server", viewController: self)
+                }
+            }
+        }
+        
+        dataTask.resume()
+    }
+    
+    func postLoginToken() {
+        let url = URL(string: "handshake", relativeTo: URL(string: KeyStorage().serverURL))
+        
+        let session = URLSession(configuration: .default)
+//        let dataTask = session.dataTask(with: url) { [weak self] data, response, error in
+//            guard error == nil,
+//                  let response = response as? HTTPURLResponse,
+//                  200..<300 ~= response.statusCode else { return }
+//        }
+//
+//        dataTask.resume()
     }
 }

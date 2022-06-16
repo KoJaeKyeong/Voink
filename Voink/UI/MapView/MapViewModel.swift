@@ -8,14 +8,16 @@
 import UIKit
 import GoogleMaps
 import CoreLocation
+import FirebaseFirestore
 
 struct MapViewModel {
-    let firebaseLogic = FirestoreLogic()
+    let db = Firestore.firestore()
     
     var camera: GMSCameraPosition {
         let locationManager = CLLocationManager()
         guard let latitude = locationManager.location?.coordinate.latitude,
               let longitude = locationManager.location?.coordinate.longitude else { return GMSCameraPosition() }
+        print("latitude: \(latitude), longitude: \(longitude)")
         return GMSCameraPosition.camera(withLatitude: latitude, longitude: longitude, zoom: 15.0)
     }
     
@@ -36,10 +38,24 @@ struct MapViewModel {
     }
     
     func addMarkerOnGoogleMap(map: GMSMapView) {
-        for recordGroup in firebaseLogic.recordGroups {
-            let marker = GMSMarker()
-            marker.position = CLLocationCoordinate2D(latitude: CLLocationDegrees(recordGroup.latitude), longitude: CLLocationDegrees(recordGroup.longitude))
-            marker.map = map
+        db.collection("group").getDocuments() { (querySnapshot, error) in
+            guard error == nil,
+                  let querySnapshot = querySnapshot else { return }
+            
+            for document in querySnapshot.documents {
+                do {
+                    let jsonData = try JSONSerialization.data(withJSONObject: document.data(), options: [])
+                    let decodedData = try JSONDecoder().decode(RecordGroup.self, from: jsonData)
+                    
+                    let marker = GMSMarker()
+                    marker.position = CLLocationCoordinate2D(latitude: CLLocationDegrees(decodedData.latitude), longitude: CLLocationDegrees(decodedData.longitude))
+                    DispatchQueue.main.async {
+                        marker.map = map
+                    }
+                } catch {
+                    
+                }
+            }
         }
     }
 }

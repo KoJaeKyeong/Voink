@@ -19,6 +19,11 @@ final class MapViewController: UIViewController {
     
     private let viewModel = MapViewModel()
         
+    override func loadView() {
+        super.loadView()
+        viewModel.addMarkerOnGoogleMap(map: mapView)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configure()
@@ -26,7 +31,7 @@ final class MapViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        viewModel.addMarkerOnGoogleMap(map: mapView)
+        mapView.camera = viewModel.camera
     }
     
     private func configure() {
@@ -48,8 +53,6 @@ final class MapViewController: UIViewController {
     }
     
     private func configureAttribute() {
-        mapView.camera = viewModel.camera
-        
         addressLabel.textAlignment = .left
     }
     

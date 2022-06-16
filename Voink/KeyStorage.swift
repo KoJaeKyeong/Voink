@@ -7,4 +7,5 @@
 
 struct KeyStorage {
     let googleMapsAPIKey = "AIzaSyD-wyR1l6apTrRuhzI3dOp_CwB7ty0UbpY"
+    let serverURL = "http://35.216.94.173"
 }
